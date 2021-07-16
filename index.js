@@ -2,17 +2,30 @@ const fs = require('fs');
 const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
 const client = new Discord.Client({
-    intents: [
-        "GUILDS",
-        "GUILD_MEMBERS",
-        "GUILD_BANS",
-        "GUILD_EMOJIS",
-        "GUILD_MESSAGE_REACTIONS",
-        "GUILD_MESSAGES",
-      ],
-})
+	messageCacheLifetime: 60,
+	fetchAllMembers: false,
+	messageCacheMaxSize: 10,
+	restTimeOffset: 0,
+	restWsBridgetimeout: 100,
+	shards: "auto",
+	allowedMentions: {
+	  parse: ["roles", "users", "everyone"],
+	  repliedUser: true,
+	},
+	partials: ["MESSAGE", "CHANNEL", "REACTION"],
+	intents: [
+	  "GUILDS",
+	  "GUILD_MEMBERS",
+	  "GUILD_BANS",
+	  "GUILD_EMOJIS",
+	  "GUILD_MESSAGE_REACTIONS",
+	  "GUILD_MESSAGES",
+	],
+  });
 client.commands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
+
+
 
 const commandFolders = fs.readdirSync('./commands');
 

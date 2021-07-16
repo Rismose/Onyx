@@ -1,5 +1,10 @@
-const Discord = require('discord.js');
+const { Client, CommandInteraction, MessageEmbed } = require('discord.js');
 
 module.exports = {
-    // idk what I am doing pls send help
+    name: 'ping',
+    description: 'showping',
+    
+    run: async(client, interaction, args) => {
+        interaction.editReply({content : `Ping : ${client.ws.ping}`})
+    }
 }
