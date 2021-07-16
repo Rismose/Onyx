@@ -1,0 +1,59 @@
+require('dotenv').config();
+
+global.botVersion = "1.0-Pre Release";
+global.botPFP = "https://media.discordapp.net/attachments/814828620753141790/865455337708322836/cooltext388931561163103.png";
+global.botInv = "https://discord.com/api/oauth2/authorize?client_id=865451842393866260&permissions=0&scope=bot%20applications.commands";
+global.botOwner = "Rismose#0079";
+
+const Discord = require('discord.js');
+const client = new Discord.Client({
+    owner: process.env.owner,
+    invite: 'https://discord.gg/'+process.env.invite
+});
+
+
+//  ########################
+let status = 1;
+function statusSwitch() {
+if(status==1) {
+    status = 2;
+    client.user.setPresence({
+        status: 'dnd',
+        activity: {
+            name: `/help | ${global.botVersion}`,
+                type: "LISTENING"
+            }
+        });
+} else if (status==2) {
+    status = 3;
+        client.user.setPresence({
+            status: 'dnd',
+            activity: {
+                name: `Over ${client.guilds.cache.size} servers.`,
+                type: "WATCHING"
+      }
+     });
+    } else if (status==3){
+        status = 1;
+        client.user.setPresence({
+          status: "dnd",
+          activity: {
+              name: "your every command.",
+              type: "LISTENING"
+          }
+         });
+      }
+    }
+global.client = client;
+
+// ########################
+
+client.once("ready", () => {
+    console.log("Ready!");
+    statusSwitch()
+    setInterval(() => statusSwitch(), 30000)
+});
+
+client.on('error', error => {
+    console.warn('bot crashed due to ' + error)
+});
