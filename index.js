@@ -36,7 +36,7 @@ process.on('unhandledRejection', error => {
 client.on('ready', async () => {
 
     //client.api.applications(client.user.id).commands("865897279738216448").delete();
-    //client.api.applications(client.user.id).guilds("813034684614311997").commands("865897279670845460").delete();
+    //client.api.applications(client.user.id).guilds("813034684614311997").commands("865966215355564042").delete();
 
     client.user.setActivity("Onyx | " + global.version, {type: 'LISTENING'})
 	client.user.setStatus("dnd");
