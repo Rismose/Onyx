@@ -8,8 +8,7 @@ module.exports = {
     global: false,
 	execute(interaction) {
         const ram = process.memoryUsage().heapUsed / 1024 / 1024
-        const botAuthor = client.users.cache.get("301063072934526987")
-        const dir = './commands';
+        const dir = './commands/';
 
         fs.readdir(dir, (err, files) => {
             const infoembed = new Discord.MessageEmbed()
@@ -24,7 +23,6 @@ module.exports = {
                 .addFields(
                     { name: 'Server count', value: client.guilds.cache.size + " server(s)", inline: true },
                     { name: 'User count', value: client.users.cache.size + " user(s)", inline: true},
-                    { name: 'Command count', value: files.length + " command(s)", inline: true},
                     { name: 'Uptime', value: client.uptime / 1000 + " seconds"}
                 )
                 .setFooter(client.user.tag, client.user.displayAvatarURL({ size: 256, format: 'png', dynamic: true }))
