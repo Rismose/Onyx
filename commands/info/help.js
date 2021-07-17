@@ -15,7 +15,9 @@ module.exports = {
                 .setTitle('Help Menu')
                 .setThumbnail(client.user.displayAvatarURL({ size: 256, format: 'png', dynamic: true }))
                 .addFields(
-                    { name: 'Fun Commands', value: 'Main', inline: true }
+                    { name: `Fun Commands`, value: "`/imgsearch`\n`/meme`\n`/ping`\n`/wiki`", inline: true },
+                    { name: `Info Commands`, value: "`/botinfo`\n`/help`", inline: true},
+                    { name: `Mod Commands`, value: "undefined", inline: true}
                 )
                 .setFooter(client.user.tag, client.user.displayAvatarURL({ size: 256, format: 'png', dynamic: true }))
                 .setTimestamp()
