@@ -1,6 +1,7 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
+const { description } = require('./commands/ping');
 const client = new Discord.Client({
 	messageCacheLifetime: 60,
 	fetchAllMembers: false,
@@ -25,82 +26,80 @@ const client = new Discord.Client({
 client.commands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
 
+global.client = client
+global.version = "1.0"
 
-
-const commandFolders = fs.readdirSync('./commands');
-
-for (const folder of commandFolders) {
-	const commandFiles = fs.readdirSync(`./commands/${folder}`).filter(file => file.endsWith('.js'));
-	for (const file of commandFiles) {
-		const command = require(`./commands/${folder}/${file}`);
-		client.commands.set(command.name, command);
-	}
-}
-
-client.once('ready', () => {
-	console.log('Ready!');
+process.on('unhandledRejection', error => {
+    console.log(`UnhandledPromiseRejection : ${error}\n`)
 });
 
-client.on('message', message => {
-	if (!message.content.startsWith(prefix) || message.author.bot) return;
+client.on('ready', async () => {
 
-	const args = message.content.slice(prefix.length).trim().split(/ +/);
-	const commandName = args.shift().toLowerCase();
+    //client.api.applications(client.user.id).commands("865897279738216448").delete();
+    //client.api.applications(client.user.id).guilds("813034684614311997").commands("865897279670845460").delete();
 
-	const command = client.commands.get(commandName)
-		|| client.commands.find(cmd => cmd.aliases && cmd.aliases.includes(commandName));
-
-	if (!command) return;
-
-	if (command.guildOnly && message.channel.type === 'dm') {
-		return message.reply('I can\'t execute that command inside DMs!');
-	}
-
-	if (command.permissions) {
-		const authorPerms = message.channel.permissionsFor(message.author);
-		if (!authorPerms || !authorPerms.has(command.permissions)) {
-			return message.reply('You can not do this!');
+    client.user.setActivity("Onyx | " + global.version, {type: 'LISTENING'})
+	client.user.setStatus("dnd");
+    console.log(`\nLogged in : ${client.user.tag}\n`)
+        /* .then((presense) => console.log(`Set presense : ${presense.activities[0]}\n`))
+        .catch(console.error); */
+		
+    const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+    for (const file of commandFiles) {
+        const command = require(`./commands/${file}`);
+        client.api.applications(client.user.id).guilds('813034684614311997').commands.post({ data: {
+            name: command.name,
+            description: command.description,
+            options: command.commandOptions
+        }})
+        if (command.global == true) {
+            client.api.applications(client.user.id).commands.post({ data: {
+                name: command.name,
+                description: command.description,
+                options: command.commandOptions
+            }})
+        } else {
+			client.api.applications(client.user.id).guilds('813034684614311997').commands.post({ data: {
+				name: command.name,
+				description: command.description,
+				options: command.commandOptions
+			}})
 		}
-	}
-
-	if (command.args && !args.length) {
-		let reply = `You didn't provide any arguments, ${message.author}!`;
-
-		if (command.usage) {
-			reply += `\nThe proper usage would be: \`${prefix}${command.name} ${command.usage}\``;
-		}
-
-		return message.channel.send(reply);
-	}
-
-	const { cooldowns } = client;
-
-	if (!cooldowns.has(command.name)) {
-		cooldowns.set(command.name, new Discord.Collection());
-	}
-
-	const now = Date.now();
-	const timestamps = cooldowns.get(command.name);
-	const cooldownAmount = (command.cooldown || 3) * 1000;
-
-	if (timestamps.has(message.author.id)) {
-		const expirationTime = timestamps.get(message.author.id) + cooldownAmount;
-
-		if (now < expirationTime) {
-			const timeLeft = (expirationTime - now) / 1000;
-			return message.reply(`please wait ${timeLeft.toFixed(1)} more second(s) before reusing the \`${command.name}\` command.`);
-		}
-	}
-
-	timestamps.set(message.author.id, now);
-	setTimeout(() => timestamps.delete(message.author.id), cooldownAmount);
-
-	try {
-		command.execute(client, message, args);
-	} catch (error) {
-		console.error(error);
-		message.reply('there was an error trying to execute that command!');
-	}
+        client.commands.set(command.name, command);
+        console.log(`Command POST : ${command.name} from ${file} (${command.global ? "global" : "guild"})`)
+    }
+    console.log("")
+    
+    let cmdArrGlobal = await client.api.applications(client.user.id).commands.get()
+    let cmdArrGuild = await client.api.applications(client.user.id).guilds('813034684614311997').commands.get()
+    cmdArrGlobal.forEach(element => {
+        console.log("Global command loaded : " + element.name + " (" + element.id + ")" )
+    });
+    console.log("")
+    cmdArrGuild.forEach(element => {
+        console.log("Guild command loaded : " + element.name + " (" + element.id + ")")
+    });
+    console.log("")
 });
+
+client.ws.on('INTERACTION_CREATE', async interaction => {
+
+    if (!client.commands.has(interaction.data.name)) return;
+
+    try {
+        client.commands.get(interaction.data.name).execute(interaction);
+    } catch (error) {
+        console.log(`Error from command ${interaction.data.name} : ${error.message}`);
+        console.log(`${error.stack}\n`)
+        client.api.interactions(interaction.id, interaction.token).callback.post({data: {
+			type: 4,
+			data: {
+					content: `Sorry, there was an error executing that command!`
+				}
+			}
+		})
+    }
+    
+})
 
 client.login(token);
