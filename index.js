@@ -1,7 +1,7 @@
 const fs = require('fs');
 const Discord = require('discord.js');
 const { prefix, token } = require('./config.json');
-const { description } = require('./commands/ping');
+const { description } = require('./commands/fun/ping');
 const client = new Discord.Client({
 	messageCacheLifetime: 60,
 	fetchAllMembers: false,
@@ -26,6 +26,10 @@ const client = new Discord.Client({
 client.commands = new Discord.Collection();
 client.cooldowns = new Discord.Collection();
 
+["command"].forEach(handler => {
+    require(`./handlers/${handler}`)(client);
+});
+
 global.client = client
 global.version = "1.0"
 
@@ -44,7 +48,7 @@ client.on('ready', async () => {
         /* .then((presense) => console.log(`Set presense : ${presense.activities[0]}\n`))
         .catch(console.error); */
 		
-    const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+    const commandFiles = fs.readdirSync('./commands/').filter(file => file.endsWith('.js'));
     for (const file of commandFiles) {
         const command = require(`./commands/${file}`);
         client.api.applications(client.user.id).guilds('813034684614311997').commands.post({ data: {
