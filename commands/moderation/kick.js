@@ -23,8 +23,13 @@ module.exports = {
 const args1 = interaction.data.options[1].value.split(" ")
 const reason = args1
 const args2 = interaction.data.options[0].mentions.users.first()
-await args2.kick().then(mem => {
-message.channel.send(`kicked ${mem.username}`)
+ args2.kick().then(mem => {
+client.api.interactions(interaction.id, interaction.token).callback.post({data: {
+                type: 4,
+                data: {
+                        content: `kicked ${mem.username}`
+                    }
+                }
 return
 })
 }
