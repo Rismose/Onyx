@@ -30,7 +30,7 @@ client.api.interactions(interaction.id, interaction.token).callback.post({data: 
                         content: `kicked ${mem.username}`
                     }
                 }
-return
+									 })
 })
 }
 }
