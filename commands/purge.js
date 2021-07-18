@@ -12,10 +12,11 @@ module.exports = {
         }
     ],
     global: false,
-    execute(interaction, channel, message) {
-        
-    const amount = interaction.data.options[0].value
-    message.channel.bulkDelete(amount)
+    execute(interaction) {
+    const channel = client.channels.cache.get(interaction.channel_id),
+    amount = interaction.data.options[0].value;
+
+    channel.bulkDelete(amount)
 
     function logResults(error, results) {
         if (error) {
@@ -41,7 +42,6 @@ module.exports = {
             const resultembed = new Discord.MessageEmbed()
                 .setColor("#3371FF")
                 .setTitle(`Purged Successfully - ${search}`)
-                .setImage(img)
                 .setFooter(amount + " messages purged")
 
             client.api.interactions(interaction.id, interaction.token).callback.post({data: {

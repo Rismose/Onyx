@@ -19,10 +19,9 @@ module.exports = {
     ],
     global: false,
     execute(interaction) {
-    const args1 = interaction.data.options[1].value.split(" ")
-    const reason = args1
-    const args2 = interaction.data.options[0].value.mentions.users.first()
-    args2.kick().then(mem => {
+    const user = interaction.data.options[1].mentions.users.first()
+    const reason = interaction.data.options[0].value.split(" ")
+    user.kick().then(mem => {
 
     client.api.interactions(interaction.id, interaction.token).callback.post({data: {
             type: 4,
