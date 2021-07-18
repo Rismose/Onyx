@@ -10,14 +10,14 @@ module.exports = {
             name: "user",
             description: "user to kick!",
             required: true
+		},
+{
+			type: 3,
+            name: "reason",
+            description: "why kick user!",
+            required: true
 		}
     ],
-[
-type: 3,
-            name: "reason",
-            description: "why did u kick this user!!",
-            required: true
-],
     global: false,
 	execute(interaction) {
 const args1 = interaction.data.options[1].value.split(" ")
