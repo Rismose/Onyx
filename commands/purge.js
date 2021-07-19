@@ -12,7 +12,7 @@ module.exports = {
     global: false,
     async execute(interaction) {
         const channel = await client.channels.fetch(interaction.channel_id),
-            amount = interaction.data.options[0].value;
+        amount = interaction.data.options[0].value;
 
         if (isNaN(amount)) {
             const resultembedn = new Discord.MessageEmbed()
